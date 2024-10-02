@@ -53,8 +53,10 @@ exit
 Screenshots of the above commands ran
 
 ![Screenshot 2024-09-23 175829](https://github.com/user-attachments/assets/50f45b7a-925f-4494-9fde-8aa065e4b67d)
-[WhatsApp Image 2024-09-23 at 18 03 11_f9e84146](https://github.com/user-attachments/assets/4a1c7cbb-c8ef-4f32-8480-f1c4aea7566e)
 
+
+
+/frac{n1}{d1} = /frac{n2}{d2}
 
 
 
