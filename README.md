@@ -379,8 +379,7 @@ Rise transition time = Time taken for output to rise to 80% - Time taken for out
 ![Screenshot from 2024-09-29 23-43-49](https://github.com/user-attachments/assets/a5841cb8-1244-4805-9c9d-979dde29ee05)
 
 
-![Screenshot from 2024-09-29 23-43-49](https://github.com/user-attachments/assets/90a8b151-0e9c-41d1-9ec1-5f0bc1207e49)
-           
+
    
  
 
