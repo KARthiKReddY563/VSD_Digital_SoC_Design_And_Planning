@@ -594,6 +594,326 @@ Screenshot of magic window with rule implemented
 
 ![Screenshot from 2024-09-30 01-12-20](https://github.com/user-attachments/assets/3897d886-f14d-4870-9a56-f15195fa8460)
 
+## Section 4 - Pre-layout timing analysis and importance of good clock tree 
+
+
+
+### Implementation
+
+* Section 4 tasks:-
+1. Fix up small DRC errors and verify the design is ready to be inserted into our flow.
+2. Save the finalized layout with custom name and open it.
+3. Generate lef from the layout.
+4. Copy the newly generated lef and associated required lib files to 'picorv32a' design 'src' directory.
+5. Edit 'config.tcl' to change lib file and add the new extra lef into the openlane flow.
+6. Run openlane flow synthesis with newly inserted custom inverter cell.
+7. Remove/reduce the newly introduced violations with the introduction of custom inverter cell by modifying design parameters.
+8. Once synthesis has accepted our custom inverter we can now run floorplan and placement and verify the cell is accepted in PnR flow.
+9. Do Post-Synthesis timing analysis with OpenSTA tool.
+10. Make timing ECO fixes to remove all violations.
+11. Replace the old netlist with the new netlist generated after timing ECO fix and implement the floorplan, placement and cts.
+12. Post-CTS OpenROAD timing analysis.
+13. Explore post-CTS OpenROAD timing analysis by removing 'sky130_fd_sc_hd__clkbuf_1' cell from clock buffer list variable 'CTS_CLK_BUFFER_LIST'.
+
+
+#### 1. Fix up small DRC errors and verify the design is ready to be inserted into our flow.
+
+Conditions to be verified before moving forward with custom designed cell layout:
+* Condition 1: The input and output ports of the standard cell should lie on the intersection of the vertical and horizontal tracks.
+* Condition 2: Width of the standard cell should be odd multiples of the horizontal track pitch.
+* Condition 3: Height of the standard cell should be even multiples of the vertical track pitch.
+
+Commands to open the custom inverter layout
+
+```bash
+# Change directory to vsdstdcelldesign
+cd Desktop/work/tools/openlane_working_dir/openlane/vsdstdcelldesign
+
+# Command to open custom inverter layout in magic
+magic -T sky130A.tech sky130_inv.mag &
+```
+
+Screenshot of tracks.info of sky130_fd_sc_hd
+
+![Screenshot from 2024-10-01 00-25-00](https://github.com/user-attachments/assets/e9b710a7-2255-4f3b-8a63-9595d13339d3)
+
+Commands for tkcon window to set grid as tracks of locali layer
+
+```tcl
+# Get syntax for grid command
+help grid
+
+# Set grid values accordingly
+grid 0.46um 0.34um 0.23um 0.17um
+```
+
+Screenshot of commands run
+
+![Screenshot from 2024-10-01 00-26-14](https://github.com/user-attachments/assets/b513ad4e-a874-4e0b-85b7-00739e3ceb9a)
+
+Condition 1 verified
+
+![Screenshot from 2024-10-01 17-19-21](https://github.com/user-attachments/assets/78c93533-e0fc-4961-906c-c541be279f57)
+
+Condition 2 verified
+
+```math
+Horizontal track pitch = 0.46 um
+```
+
+![Screenshot from 2024-10-01 17-27-51](https://github.com/user-attachments/assets/8bc0218a-14e6-4e9f-b776-daf01ade4c59)
+
+```math
+Width of standard cell = 1.38 um = 0.46 * 3
+```
+
+Condition 3 verified
+
+```math
+Vertical track pitch = 0.34 um
+```
+![Screenshot from 2024-10-01 17-27-31](https://github.com/user-attachments/assets/1d1b5e22-690d-41bc-af03-2d7c7e313c49)
+
+```math
+Height of standard cell = 2.72 um = 0.34 * 8
+```
+
+#### 2. Save the finalized layout with custom name and open it.
+
+Command for tkcon window to save the layout with custom name
+
+```tcl
+# Command to save as
+save sky130_vsdinv.mag
+```
+
+Command to open the newly saved layout
+
+```bash
+# Command to open custom inverter layout in magic
+magic -T sky130A.tech sky130_vsdinv.mag &
+```
+
+Screenshot of newly saved layout
+
+![Screenshot from 2024-10-01 17-30-26](https://github.com/user-attachments/assets/b2ed6f61-16ec-4fd3-a0f2-1fd0ec160337)
+
+#### 3. Generate lef from the layout.
+
+Command for tkcon window to write lef
+
+```tcl
+# lef command
+lef write
+```
+
+Screenshot of command run
+
+![Screenshot from 2024-10-01 17-30-39](https://github.com/user-attachments/assets/a8adcfa5-0f09-4f15-a3ee-ac9c398530f2)
+
+Screenshot of newly created lef file
+
+![Screenshot from 2024-10-01 17-31-41](https://github.com/user-attachments/assets/2229d548-383e-478c-a128-8d97fe052c6b)
+
+#### 4. Copy the newly generated lef and associated required lib files to 'picorv32a' design 'src' directory.
+
+Commands to copy necessary files to 'picorv32a' design 'src' directory
+
+```bash
+# Copy lef file
+cp sky130_vsdinv.lef ~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/
+
+# List and check whether it's copied
+ls ~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/
+
+# Copy lib files
+cp libs/sky130_fd_sc_hd__* ~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/
+
+# List and check whether it's copied
+ls ~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/
+```
+
+Screenshot of commands run
+
+![Screenshot from 2024-10-01 17-37-05](https://github.com/user-attachments/assets/b6741912-924c-4b63-ad2a-8f6e45890549)
+
+#### 5. Edit 'config.tcl' to change lib file and add the new extra lef into the openlane flow.
+
+Commands to be added to config.tcl to include our custom cell in the openlane flow
+
+```tcl
+set ::env(LIB_SYNTH) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__typical.lib"
+set ::env(LIB_FASTEST) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__fast.lib"
+set ::env(LIB_SLOWEST) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__slow.lib"
+set ::env(LIB_TYPICAL) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__typical.lib"
+
+set ::env(EXTRA_LEFS) [glob $::env(OPENLANE_ROOT)/designs/$::env(DESIGN_NAME)/src/*.lef]
+```
+
+Edited config.tcl to include the added lef and change library to ones we added in src directory
+
+![Screenshot from 2024-10-01 17-45-12](https://github.com/user-attachments/assets/edec9e17-e29e-4fa4-9e1a-f0d201dbd7ba)
+
+#### 6. Run openlane flow synthesis with newly inserted custom inverter cell.
+
+Commands to invoke the OpenLANE flow include new lef and perform synthesis 
+
+```bash
+# Change directory to openlane flow directory
+cd Desktop/work/tools/openlane_working_dir/openlane
+
+# alias docker='docker run -it -v $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) efabless/openlane:v0.21'
+# Since we have aliased the long command to 'docker' we can invoke the OpenLANE flow docker sub-system by just running this command
+docker
+```
+```tcl
+# Now that we have entered the OpenLANE flow contained docker sub-system we can invoke the OpenLANE flow in the Interactive mode using the following command
+./flow.tcl -interactive
+
+# Now that OpenLANE flow is open we have to input the required packages for proper functionality of the OpenLANE flow
+package require openlane 0.9
+
+# Now the OpenLANE flow is ready to run any design and initially we have to prep the design creating some necessary files and directories for running a specific design which in our case is 'picorv32a'
+prep -design picorv32a
+
+# Adiitional commands to include newly added lef to openlane flow
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+# Now that the design is prepped and ready, we can run synthesis using following command
+run_synthesis
+```
+
+Screenshots of commands run
+
+![Screenshot from 2024-10-01 18-21-52](https://github.com/user-attachments/assets/78028ee7-6ed5-4bf0-b266-f03b56b78884)
+
+#### 7. Remove/reduce the newly introduced violations with the introduction of custom inverter cell by modifying design parameters.
+
+Noting down current design values generated before modifying parameters to improve timing
+
+![Screenshot from 2024-10-01 18-21-08](https://github.com/user-attachments/assets/84f6c0d2-54a8-4f17-bfec-b50d57dca767)
+
+![Screenshot from 2024-10-01 18-21-02](https://github.com/user-attachments/assets/b12d9660-f667-4f14-908e-82a4b36845c1)
+
+Commands to view and change parameters to improve timing and run synthesis
+
+```tcl
+# Now once again we have to prep design so as to update variables
+prep -design picorv32a -tag 24-09_19-19 -overwrite
+
+# Addiitional commands to include newly added lef to openlane flow merged.lef
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+# Command to display current value of variable SYNTH_STRATEGY
+echo $::env(SYNTH_STRATEGY)
+
+# Command to set new value for SYNTH_STRATEGY
+set ::env(SYNTH_STRATEGY) 1
+
+# Command to display current value of variable SYNTH_BUFFERING to check whether it's enabled
+echo $::env(SYNTH_BUFFERING)
+
+# Command to display current value of variable SYNTH_SIZING
+echo $::env(SYNTH_SIZING)
+
+# Command to set new value for SYNTH_SIZING
+set ::env(SYNTH_SIZING) 1
+
+# Command to display current value of variable SYNTH_DRIVING_CELL to check whether it's the proper cell or not
+echo $::env(SYNTH_DRIVING_CELL)
+
+# Now that the design is prepped and ready, we can run synthesis using following command
+run_synthesis
+```
+
+Screenshot of merged.lef in `tmp` directory with our custom inverter as macro
+
+![Screenshot from 2024-10-01 18-16-10](https://github.com/user-attachments/assets/1ab634a4-eed4-4440-a4bc-aea13cdebfec)
+
+Screenshots of commands run
+
+![Screenshot from 2024-10-01 17-53-50](https://github.com/user-attachments/assets/7d99a2f0-1a1a-4ab1-bc8b-8edfdf5ccc9e)
+
+![Screenshot from 2024-10-01 18-26-03](https://github.com/user-attachments/assets/f7eb4275-ad10-4709-b992-d09e1b73cd87)
+
+
+Comparing to previously noted run values area has increased and worst negative slack has become 0
+
+![Screenshot from 2024-10-01 18-27-05](https://github.com/user-attachments/assets/0ff437e6-f7e9-4a9c-80dc-f9f3e089ee7f)
+![Screenshot from 2024-10-01 18-26-59](https://github.com/user-attachments/assets/6c95c131-5969-47c2-94ca-1dbd6d8cd107)
+
+#### 8. Once synthesis has accepted our custom inverter we can now run floorplan and placement and verify the cell is accepted in PnR flow.
+
+Now that our custom inverter is properly accepted in synthesis we can now run floorplan using following command
+
+```tcl
+# Now we can run floorplan
+run_floorplan
+```
+
+Screenshots of command run
+
+![Screenshot from 2024-10-01 18-28-23](https://github.com/user-attachments/assets/f6fabcd0-03dc-4dff-b24a-e86ca2ac7acc)
+![Screenshot from 2024-10-01 18-28-00](https://github.com/user-attachments/assets/62eb9b8c-7562-4889-88d1-0b43534f5bf4)
+
+Since we are facing unexpected un-explainable error while using `run_floorplan` command, we can instead use the following set of commands available based on information from `Desktop/work/tools/openlane_working_dir/openlane/scripts/tcl_commands/floorplan.tcl` and also based on `Floorplan Commands` section in `Desktop/work/tools/openlane_working_dir/openlane/docs/source/OpenLANE_commands.md`
+
+```tcl
+# Follwing commands are alltogather sourced in "run_floorplan" command
+init_floorplan
+place_io
+tap_decap_or
+```
+
+Screenshots of commands run
+
+![Screenshot from 2024-10-01 18-29-49](https://github.com/user-attachments/assets/fd0b7e65-4686-4191-9faf-4836d0fd06b6)
+![Screenshot from 2024-10-01 18-30-01](https://github.com/user-attachments/assets/3e5aba77-c592-4557-92dc-f0546bc33239)
+![Screenshot from 2024-10-01 18-30-04](https://github.com/user-attachments/assets/14836a58-715d-429b-ad26-17a6a77accb0)
+
+Now that floorplan is done we can do placement using following command
+
+```tcl
+# Now we are ready to run placement
+run_placement
+```
+
+Screenshots of command run
+
+![Screenshot from 2024-10-01 18-31-18](https://github.com/user-attachments/assets/e623be3d-2b3c-4f1f-8d1f-1e6b069f6b26)
+![Screenshot from 2024-10-01 18-31-27](https://github.com/user-attachments/assets/85d3b9a6-869c-47ac-a192-f2c75b3bcc51)
+
+Commands to load placement def in magic in another terminal
+
+```bash
+# Change directory to path containing generated placement def
+cd Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/24-09_19-19/results/placement/
+
+# Command to load the placement def in magic tool
+magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def &
+```
+
+Screenshot of placement def in magic
+
+![Screenshot from 2024-10-01 18-33-10](https://github.com/user-attachments/assets/f17f171a-c0f4-4899-a78a-86bf77c0bb66)
+
+Screenshot of custom inverter inserted in placement def with proper abutment
+
+![Screenshot from 2024-10-01 18-33-36](https://github.com/user-attachments/assets/b0e85b0b-07a3-4612-9aeb-960c33117322)
+
+Command for tkcon window to view internal layers of cells
+
+```tcl
+# Command to view internal connectivity layers
+expand
+```
+
+Abutment of power pins with other cell from library clearly visible
+
+![Screenshot from 2024-10-01 18-34-10](https://github.com/user-attachments/assets/c56417ac-7839-4834-9dc8-96a1e274d409)
+
 
 
    
