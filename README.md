@@ -52,6 +52,8 @@ exit
 
 Screenshots of the above commands ran
 
+![Screenshot 2024-09-23 175829](https://github.com/user-attachments/assets/50f45b7a-925f-4494-9fde-8aa065e4b67d)
+
 
 
 
