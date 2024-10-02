@@ -378,6 +378,222 @@ Rise transition time = Time taken for output to rise to 80% - Time taken for out
 
 ![Screenshot from 2024-09-29 23-43-49](https://github.com/user-attachments/assets/a5841cb8-1244-4805-9c9d-979dde29ee05)
 
+```math
+Rise transition time = 2.24638 - 2.18242 = 0.06396 ns = 63.96 ps
+```
+
+Fall transition time calculation
+
+```math
+Fall transition time = Time taken for output to fall to 20% - Time taken for output to fall to 80%
+```
+```math
+20% of output = 660 mV
+```
+```math
+80% of output = 2.64 V
+```
+
+20% Screenshots
+
+![Screenshot from 2024-10-02 21-58-28 1](https://github.com/user-attachments/assets/49ca4b44-e322-4d3f-a0bd-7be164d92156)
+
+![Screenshot from 2024-10-02 21-58-32 1](https://github.com/user-attachments/assets/2de43fd6-7beb-4361-94f3-94ec3a61c302)
+
+80% Screenshots
+
+![Screenshot from 2024-10-02 21-59-25 1](https://github.com/user-attachments/assets/835a9e0d-6252-4379-bbc7-b4107e71a125)
+
+![Screenshot from 2024-10-02 21-59-29 1](https://github.com/user-attachments/assets/8090ac3e-a0e7-4801-ab4b-2109a959d9fa)
+
+```math
+Fall transition time = 4.0955 - 4.0536 = 0.0419 ns = 41.9 ps
+```
+
+Rise Cell Delay Calculation
+
+```math
+Rise Cell Delay = Time taken for output to rise to 50% - Time taken for input to fall to 50%
+```
+```math
+50% of 3.3 V = 1.65 V
+```
+
+50% Screenshots
+
+![WhatsApp Image 2024-10-02 at 22 13 49_2de01a5d](https://github.com/user-attachments/assets/3c3f1b7d-ef7d-4fec-9509-49eae308a346)
+
+![WhatsApp Image 2024-10-02 at 22 13 49_7acceb53](https://github.com/user-attachments/assets/ea5c8c72-80fe-42ac-9833-69af1284119b)
+
+```math
+Rise Cell Delay = 2.21144 - 2.15008 = 0.06136 ns = 61.36 ps
+```
+
+Fall Cell Delay Calculation
+
+```math
+Fall Cell Delay = Time taken for output to fall to 50% - Time taken for input to rise to 50%
+```
+```math
+50% of 3.3 V = 1.65 V
+```
+
+50% Screenshots
+
+![WhatsApp Image 2024-10-02 at 22 13 49_61f8fb41](https://github.com/user-attachments/assets/20b9f4f4-914d-4c5a-8b19-df8c4c8e8183)
+
+![WhatsApp Image 2024-10-02 at 22 13 49_7131e0b9](https://github.com/user-attachments/assets/cab04013-228a-4fb4-9f8f-b952c089fc67)
+
+```math
+Fall Cell Delay = 4.07 - 4.05 = 0.02 ns = 20 ps
+```
+
+#### 6. Find problem in the DRC section of the old magic tech file for the skywater process and fix them.
+
+Link to Sky130 Periphery rules: [https://skywater-pdk.readthedocs.io/en/main/rules/periphery.html](https://skywater-pdk.readthedocs.io/en/main/rules/periphery.html)
+
+Commands to download and view the corrupted skywater process magic tech file and associated files to perform drc corrections
+
+```bash
+# Change to home directory
+cd
+
+# Command to download the lab files
+wget http://opencircuitdesign.com/open_pdks/archive/drc_tests.tgz
+
+# Since lab file is compressed command to extract it
+tar xfz drc_tests.tgz
+
+# Change directory into the lab folder
+cd drc_tests
+
+# List all files and directories present in the current directory
+ls -al
+
+# Command to view .magicrc file
+gvim .magicrc
+
+# Command to open magic tool in better graphics
+magic -d XR &
+```
+
+Screenshots of commands run
+
+![Screenshot from 2024-09-29 23-49-57](https://github.com/user-attachments/assets/7b13623f-a585-427e-bcad-d92e84921b8d)
+
+![Screenshot from 2024-09-29 23-50-06](https://github.com/user-attachments/assets/79e6698d-9edb-4d5b-9858-a65319d2f523)
+
+Screenshot of .magicrc file
+
+![Screenshot from 2024-09-29 23-50-28](https://github.com/user-attachments/assets/660fecab-a6d0-47ea-9135-795274c7785e)
+
+**Incorrectly implemented poly.9 simple rule correction**
+
+Screenshot of poly rules
+
+![image](https://github.com/user-attachments/assets/e53003b9-0196-4743-a69d-b22ab4cb815a)
+
+Incorrectly implemented poly.9 rule no drc violation even though spacing < 0.48u
+
+![WhatsApp Image 2024-10-02 at 22 26 37_97dd7e0c](https://github.com/user-attachments/assets/c83a30c6-3188-4b2a-a7ec-146761ac6f42)
+
+
+New commands inserted in sky130A.tech file to update drc
+
+![Screenshot from 2024-09-30 00-15-50](https://github.com/user-attachments/assets/1eec6cb7-7eb4-47ef-ac09-c7bee9c869a0)
+
+![Screenshot from 2024-09-30 00-23-00](https://github.com/user-attachments/assets/7f19e46c-6051-41ed-84f2-3570346e12c2)
+
+
+
+Commands to run in tkcon window
+
+```tcl
+# Loading updated tech file
+tech load sky130A.tech
+
+# Must re-run drc check to see updated drc errors
+drc check
+
+# Selecting region displaying the new errors and getting the error messages 
+drc why
+```
+
+Screenshot of magic window with rule implemented
+
+![Screenshot from 2024-09-30 00-25-10](https://github.com/user-attachments/assets/15d66e88-58b2-4016-9d65-39bf846981d1)
+
+![Screenshot from 2024-09-30 00-46-55](https://github.com/user-attachments/assets/f1bb5420-cf49-4e5a-a650-dcc64e65528d)
+
+**Incorrectly implemented difftap.2 simple rule correction**
+
+Screenshot of difftap rules
+
+![image](https://github.com/user-attachments/assets/0e9c00e5-c310-402e-89a9-3dd2018a7e14)
+
+
+Incorrectly implemented difftap.2 rule no drc violation even though spacing < 0.42u
+
+![WhatsApp Image 2024-10-02 at 22 36 20_7731d86c](https://github.com/user-attachments/assets/6e08229c-a654-49be-90f5-5ca3f1e5046f)
+
+New commands inserted in sky130A.tech file to update drc
+
+![WhatsApp Image 2024-10-02 at 22 36 18_a723a90d](https://github.com/user-attachments/assets/3a975ab9-e72e-4d6c-b8d1-0cd3d9a7e819)
+
+
+Commands to run in tkcon window
+
+```tcl
+# Loading updated tech file
+tech load sky130A.tech
+
+# Must re-run drc check to see updated drc errors
+drc check
+
+# Selecting region displaying the new errors and getting the error messages 
+drc why
+```
+
+Screenshot of magic window with rule implemented
+
+![WhatsApp Image 2024-10-02 at 22 36 19_94d342a2](https://github.com/user-attachments/assets/5ab324b3-a3d3-4804-bfb0-77c63879c513)
+
+**Incorrectly implemented nwell.4 complex rule correction**
+
+Screenshot of nwell rules
+
+![image](https://github.com/user-attachments/assets/b2b5fdf1-4736-4a84-9866-62863bf1ff9c)
+
+Incorrectly implemented nwell.4 rule no drc violation even though no tap present in nwell
+
+![Screenshot from 2024-09-30 01-12-20](https://github.com/user-attachments/assets/5fd41b1e-0f83-422a-a2a7-90e4e61d1ce1)
+
+New commands inserted in sky130A.tech file to update drc
+
+![Screenshot from 2024-09-30 01-04-06](https://github.com/user-attachments/assets/7b1b025b-456a-4749-beb9-d9704d486bdb)
+
+![Screenshot from 2024-09-30 01-04-28](https://github.com/user-attachments/assets/4a2cca17-2d79-4329-99a7-b8d60602e968)
+
+Commands to run in tkcon window
+
+```tcl
+# Loading updated tech file
+tech load sky130A.tech
+
+# Change drc style to drc full
+drc style drc(full)
+
+# Must re-run drc check to see updated drc errors
+drc check
+
+# Selecting region displaying the new errors and getting the error messages 
+drc why
+```
+
+Screenshot of magic window with rule implemented
+
+![Screenshot from 2024-09-30 01-12-20](https://github.com/user-attachments/assets/3897d886-f14d-4870-9a56-f15195fa8460)
+
 
 
    
