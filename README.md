@@ -1364,6 +1364,149 @@ Screenshots of commands run and timing report generated
 ![Screenshot from 2024-10-01 20-10-55](https://github.com/user-attachments/assets/f30df6bc-9313-40cc-9660-694b5073595a)
 ![Screenshot from 2024-10-01 20-10-59](https://github.com/user-attachments/assets/7c1442d8-116e-4a4c-adb9-7e6a8a5765ed)
 
+## Section 5 - Final steps for RTL2GDS using tritonRoute and openSTA (25/03/2024 - 26/03/2024)
+
+
+
+### Implementation
+
+* Section 5 tasks:-
+1. Perform generation of Power Distribution Network (PDN) and explore the PDN layout.
+2. Perfrom detailed routing using TritonRoute.
+3. Post-Route parasitic extraction using SPEF extractor.
+4. Post-Route OpenSTA timing analysis with the extracted parasitics of the route.
+
+
+
+#### 1. Perform generation of Power Distribution Network (PDN) and explore the PDN layout.
+
+Commands to perform all necessary stages up until now
+
+```bash
+# Change directory to openlane flow directory
+cd Desktop/work/tools/openlane_working_dir/openlane
+
+# alias docker='docker run -it -v $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) efabless/openlane:v0.21'
+# Since we have aliased the long command to 'docker' we can invoke the OpenLANE flow docker sub-system by just running this command
+docker
+```
+```tcl
+# Now that we have entered the OpenLANE flow contained docker sub-system we can invoke the OpenLANE flow in the Interactive mode using the following command
+./flow.tcl -interactive
+
+# Now that OpenLANE flow is open we have to input the required packages for proper functionality of the OpenLANE flow
+package require openlane 0.9
+
+# Now the OpenLANE flow is ready to run any design and initially we have to prep the design creating some necessary files and directories for running a specific design which in our case is 'picorv32a'
+prep -design picorv32a
+
+# Addiitional commands to include newly added lef to openlane flow merged.lef
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+# Command to set new value for SYNTH_STRATEGY
+set ::env(SYNTH_STRATEGY) "DELAY 3"
+
+# Command to set new value for SYNTH_SIZING
+set ::env(SYNTH_SIZING) 1
+
+# Now that the design is prepped and ready, we can run synthesis using following command
+run_synthesis
+
+# Following commands are alltogather sourced in "run_floorplan" command
+init_floorplan
+place_io
+tap_decap_or
+
+# Now we are ready to run placement
+run_placement
+
+# Incase getting error
+unset ::env(LIB_CTS)
+
+# With placement done we are now ready to run CTS
+run_cts
+
+# Now that CTS is done we can do power distribution network
+gen_pdn 
+```
+
+Screenshots of power distribution network run
+
+![WhatsApp Image 2024-10-03 at 17 22 38_b14b7a46](https://github.com/user-attachments/assets/28e855ad-5030-482a-bee6-8dcb216baf27)
+![WhatsApp Image 2024-10-03 at 17 22 54_7deec917](https://github.com/user-attachments/assets/0c44b425-2801-4557-8285-03f4bf7644a3)
+![WhatsApp Image 2024-10-03 at 17 22 55_3ebd028d](https://github.com/user-attachments/assets/18b61353-303c-415d-b589-a17af7bc7f22)
+![WhatsApp Image 2024-10-03 at 17 22 57_36971d23](https://github.com/user-attachments/assets/0fe3a81f-8ceb-45fa-907c-1e4210f10773)
+![WhatsApp Image 2024-10-03 at 17 23 04_19fdcd4a](https://github.com/user-attachments/assets/8df0645b-49c1-44e5-970b-284263580f9d)
+![WhatsApp Image 2024-10-03 at 17 23 04_6e17a928](https://github.com/user-attachments/assets/7739360a-da83-4fd2-9c76-40d164be4d79)
+![WhatsApp Image 2024-10-03 at 17 23 04_e632bd85](https://github.com/user-attachments/assets/fc64bf06-2f70-4aa6-9820-323af35462bd)
+![WhatsApp Image 2024-10-03 at 17 23 07_ff46047f](https://github.com/user-attachments/assets/d3fd25c1-79d2-4cf4-bd90-37b09384a82d)
+
+Commands to load PDN def in magic in another terminal
+
+```bash
+# Change directory to path containing generated PDN def
+cd Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/03-10_11-37/tmp/floorplan/
+
+# Command to load the PDN def in magic tool
+magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read 14-pdn.def &
+```
+
+Screenshot of commands ran 
+
+![WhatsApp Image 2024-10-03 at 17 23 14_465b8aa5](https://github.com/user-attachments/assets/afaa1126-fe56-458c-a992-6e4f48eb56f3)
+
+Screenshots of PDN def
+
+![WhatsApp Image 2024-10-03 at 17 23 14_0562f394](https://github.com/user-attachments/assets/7cee742f-ba32-44fc-8ca5-ee5769f03256)
+![WhatsApp Image 2024-10-03 at 17 23 14_d0cd72a0](https://github.com/user-attachments/assets/15a2e506-2780-4c87-bd4b-3fe780a65cda)
+![WhatsApp Image 2024-10-03 at 17 23 14_5b7a27f3](https://github.com/user-attachments/assets/7058a16b-3ae5-4c15-9734-906cb7a819da)
+
+#### 2. Perfrom detailed routing using TritonRoute and explore the routed layout.
+
+Command to perform routing
+
+```tcl
+# Check value of 'CURRENT_DEF'
+echo $::env(CURRENT_DEF)
+
+# Check value of 'ROUTING_STRATEGY'
+echo $::env(ROUTING_STRATEGY)
+
+# Command for detailed route using TritonRoute
+run_routing
+```
+
+Screenshots of routing run
+
+![WhatsApp Image 2024-10-03 at 17 23 14_55db3b43](https://github.com/user-attachments/assets/5074689f-904d-4912-a12f-4560883d370c)
+
+Commands to load routed def in magic in another terminal
+
+```bash
+# Change directory to path containing routed def
+cd Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/03-10_11-37/results/routing/
+
+# Command to load the routed def in magic tool
+magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.def &
+```
+
+Screenshots of routed def
+
+![WhatsApp Image 2024-10-03 at 18 06 13_06c24d3e](https://github.com/user-attachments/assets/b5b6423d-750b-49f9-adeb-0a73ddc739e8)
+![WhatsApp Image 2024-10-03 at 18 06 13_0b0d6888](https://github.com/user-attachments/assets/e0e11a83-bd82-46d9-94da-eda4ed719771)
+![WhatsApp Image 2024-10-03 at 18 06 15_10c78fa7](https://github.com/user-attachments/assets/3cc6d07c-5faa-4730-8b51-8d159f695215)
+![WhatsApp Image 2024-10-03 at 18 06 18_fef149c7](https://github.com/user-attachments/assets/a5b6880a-b17f-4105-82e4-488ffcdfb694)
+![WhatsApp Image 2024-10-03 at 18 06 18_780bcad5](https://github.com/user-attachments/assets/1e2fe344-79e9-4508-bff4-ca064b58a9f5)
+
+
+Screenshot of fast route guide present in `openlane/designs/picorv32a/runs/03-10_11-37/tmp/routing` directory
+
+![WhatsApp Image 2024-10-03 at 18 06 18_48aa995e](https://github.com/user-attachments/assets/67df4402-5a1d-48bf-bccd-876768f3c509)
+
+
+
+
 
    
  
