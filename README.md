@@ -363,13 +363,13 @@ Screenshot of generated plot
 Rise transition time calculation
 
 
-```math
+```
 Rise transition time = Time taken for o/p to rise to 80% - Time taken for o/p to rise to 20%
 ```
-```math
+```
 20% of the O/P = 660mv
 ```
-```math
+```
 80% of the O/P = 2.64mv
 ```
 20% Screenshots
