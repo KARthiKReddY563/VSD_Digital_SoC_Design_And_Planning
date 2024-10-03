@@ -364,6 +364,7 @@ Rise transition time calculation
 
 ```math
 Rise transition time = Time taken for output to rise to 80% - Time taken for output to rise to 20%
+Rise 
 ```
 ```math
 20 % of output = 660 mV
@@ -371,7 +372,15 @@ Rise transition time = Time taken for output to rise to 80% - Time taken for out
 ```math
 80 % of output = 2.64 V
 ```
-
+```
+Rise transition time = Time taken for o/p to rise to 80% - Time taken for o/p to rise to 20%
+```
+```
+20% of the O/P = 660mv
+```
+```
+80% of the O/P = 2.64mv
+```
 20% Screenshots
 
 ![Screenshot from 2024-09-29 23-42-38](https://github.com/user-attachments/assets/76b8523e-a726-4edf-8fbd-34d373298cd1)
