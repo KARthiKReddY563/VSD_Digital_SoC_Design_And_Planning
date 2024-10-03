@@ -914,6 +914,455 @@ Abutment of power pins with other cell from library clearly visible
 
 ![Screenshot from 2024-10-01 18-34-10](https://github.com/user-attachments/assets/c56417ac-7839-4834-9dc8-96a1e274d409)
 
+#### 9. Do Post-Synthesis timing analysis with OpenSTA tool.
+
+Since we are having 0 wns after improved timing run we are going to do timing analysis on initial run of synthesis which has lots of violations and no parameters were added to improve timing
+
+Commands to invoke the OpenLANE flow include new lef and perform synthesis 
+
+```bash
+# Change directory to openlane flow directory
+cd Desktop/work/tools/openlane_working_dir/openlane
+
+# alias docker='docker run -it -v $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) efabless/openlane:v0.21'
+# Since we have aliased the long command to 'docker' we can invoke the OpenLANE flow docker sub-system by just running this command
+docker
+```
+```tcl
+# Now that we have entered the OpenLANE flow contained docker sub-system we can invoke the OpenLANE flow in the Interactive mode using the following command
+./flow.tcl -interactive
+
+# Now that OpenLANE flow is open we have to input the required packages for proper functionality of the OpenLANE flow
+package require openlane 0.9
+
+# Now the OpenLANE flow is ready to run any design and initially we have to prep the design creating some necessary files and directories for running a specific design which in our case is 'picorv32a'
+prep -design picorv32a
+
+# Adiitional commands to include newly added lef to openlane flow
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+# Command to set new value for SYNTH_SIZING
+set ::env(SYNTH_SIZING) 1
+
+# Now that the design is prepped and ready, we can run synthesis using following command
+run_synthesis
+```
+
+Commands run final screenshot
+
+![WhatsApp Image 2024-10-03 at 16 11 30_75e90ae0](https://github.com/user-attachments/assets/ee7a3b0c-776c-4b9e-a9f8-6512047873a1)
+
+Newly created `pre_sta.conf` for STA analysis in `openlane` directory
+
+![WhatsApp Image 2024-10-03 at 16 11 30_c34f9892](https://github.com/user-attachments/assets/81915ac9-a166-4af2-bfbc-53e746296f6a)
+
+Newly created `my_base.sdc` for STA analysis in `openlane/designs/picorv32a/src` directory based on the file `openlane/scripts/base.sdc`
+
+![WhatsApp Image 2024-10-03 at 15 48 58_59b11f79](https://github.com/user-attachments/assets/a9f68fd0-6fa0-417f-ac7b-3389e44335f4)
+
+Commands to run STA in another terminal
+
+```bash
+# Change directory to openlane
+cd Desktop/work/tools/openlane_working_dir/openlane
+
+# Command to invoke OpenSTA tool with script
+sta pre_sta.conf
+```
+
+Screenshots of commands run
+
+![WhatsApp Image 2024-10-03 at 16 11 30_887c6655](https://github.com/user-attachments/assets/239b8248-91ce-4043-9762-d75378fffea4)
+![WhatsApp Image 2024-10-03 at 16 11 35_7f4ff229](https://github.com/user-attachments/assets/dbe7eadc-f960-45e1-b1e7-a14207ace847)
+![WhatsApp Image 2024-10-03 at 16 11 35_e3c0b46e](https://github.com/user-attachments/assets/d6d64c97-5610-418f-8638-73609e3c20d3)
+![WhatsApp Image 2024-10-03 at 16 11 35_c85c5457](https://github.com/user-attachments/assets/172d7066-854b-444e-a18b-8024858ee986)
+
+
+Since more fanout is causing more delay we can add parameter to reduce fanout and do synthesis again
+
+Commands to include new lef and perform synthesis 
+
+```tcl
+# Now the OpenLANE flow is ready to run any design and initially we have to prep the design creating some necessary files and directories for running a specific design which in our case is 'picorv32a'
+prep -design picorv32a -tag 25-03_18-52 -overwrite
+
+# Adiitional commands to include newly added lef to openlane flow
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+# Command to set new value for SYNTH_SIZING
+set ::env(SYNTH_SIZING) 1
+
+# Command to set new value for SYNTH_MAX_FANOUT
+set ::env(SYNTH_MAX_FANOUT) 4
+
+# Command to display current value of variable SYNTH_DRIVING_CELL to check whether it's the proper cell or not
+echo $::env(SYNTH_DRIVING_CELL)
+
+# Now that the design is prepped and ready, we can run synthesis using following command
+run_synthesis
+```
+
+Commands run final screenshot
+
+![WhatsApp Image 2024-10-03 at 16 11 35_eeabbcbc](https://github.com/user-attachments/assets/57174759-afc6-4028-9ced-97214ea9787e)
+![WhatsApp Image 2024-10-03 at 16 26 48_7a7edc27](https://github.com/user-attachments/assets/8d4e499a-f3a3-4580-a9a3-c6090e5061e8)
+
+Commands to run STA in another terminal
+
+```bash
+# Change directory to openlane
+cd Desktop/work/tools/openlane_working_dir/openlane
+
+# Command to invoke OpenSTA tool with script
+sta pre_sta.conf
+```
+
+Screenshots of commands run
+
+![WhatsApp Image 2024-10-03 at 16 26 48_bc213844](https://github.com/user-attachments/assets/473a06cd-4a90-4716-8572-a4e8a9b96ac1)
+![WhatsApp Image 2024-10-03 at 16 26 48_9da211e6](https://github.com/user-attachments/assets/442dd400-18bd-4708-9a99-0a203a7fb057)
+![WhatsApp Image 2024-10-03 at 16 26 48_981b622b](https://github.com/user-attachments/assets/eedfb28f-e17d-45d1-9a6f-65919d363656)
+![WhatsApp Image 2024-10-03 at 16 26 48_6ebb809f](https://github.com/user-attachments/assets/ecd33bac-3f0b-4792-8318-519261f5abb6)
+
+#### 10. Make timing ECO fixes to remove all violations.
+
+OR gate of drive strength 2 is driving 4 fanouts
+
+![WhatsApp Image 2024-10-03 at 16 26 48_83280348](https://github.com/user-attachments/assets/5882d0f5-c49e-4716-a874-dbe8737e8bc5)
+
+Commands to perform analysis and optimize timing by replacing with OR gate of drive strength 4
+
+```tcl
+# Reports all the connections to a net
+report_net -connections _11672_
+
+# Checking command syntax
+help replace_cell
+
+# Replacing cell
+replace_cell _14510_ sky130_fd_sc_hd__or3_4
+
+# Generating custom timing report
+report_checks -fields {net cap slew input_pins} -digits 4
+```
+
+Result - slack reduced
+
+![WhatsApp Image 2024-10-03 at 16 26 48_aa40614d](https://github.com/user-attachments/assets/2e4ab95d-bab1-41ae-817c-b8f8349680e7)
+![WhatsApp Image 2024-10-03 at 16 26 51_35f25ac7](https://github.com/user-attachments/assets/942a7a25-e8a8-41a7-a03c-e1646a15a7a6)
+![WhatsApp Image 2024-10-03 at 16 26 51_b243c12d](https://github.com/user-attachments/assets/e801a249-f977-43eb-92c9-b87c9f239102)
+![WhatsApp Image 2024-10-03 at 16 26 51_37ebd960](https://github.com/user-attachments/assets/98e57d7f-420b-408d-ae6d-9ffd764b33a1)
+
+OR gate of drive strength 2 is driving 4 fanouts
+
+![WhatsApp Image 2024-10-03 at 16 26 57_0b002b8b](https://github.com/user-attachments/assets/368f4878-68b0-413f-9da4-565731c117f5)
+
+Commands to perform analysis and optimize timing by replacing with OR gate of drive strength 4
+
+```tcl
+# Reports all the connections to a net
+report_net -connections _11675_
+
+# Replacing cell
+replace_cell _14514_ sky130_fd_sc_hd__or3_4
+
+# Generating custom timing report
+report_checks -fields {net cap slew input_pins} -digits 4
+```
+
+Result - slack reduced
+
+![WhatsApp Image 2024-10-03 at 16 26 57_7aae6f8d](https://github.com/user-attachments/assets/106fb7fd-43a1-4eab-b5f2-6a318802ab26)
+![WhatsApp Image 2024-10-03 at 16 26 57_3a633e21](https://github.com/user-attachments/assets/ad3653a2-4480-4d5a-b31e-938cf37055f4)
+
+OR gate of drive strength 2 driving OA gate has more delay
+
+![WhatsApp Image 2024-10-03 at 16 26 57_0490a6b8](https://github.com/user-attachments/assets/01033e92-d360-49a5-9527-9296b2aeba0d)
+
+Commands to perform analysis and optimize timing by replacing with OR gate of drive strength 4
+
+```tcl
+# Reports all the connections to a net
+report_net -connections _11643_
+
+# Replacing cell
+replace_cell _14481_ sky130_fd_sc_hd__or4_4
+
+# Generating custom timing report
+report_checks -fields {net cap slew input_pins} -digits 4
+```
+
+Result - slack reduced
+
+![WhatsApp Image 2024-10-03 at 16 26 57_41f29edf](https://github.com/user-attachments/assets/c29a7cc3-9de2-4568-aaeb-ea32877d6169)
+![WhatsApp Image 2024-10-03 at 16 26 57_16b62538](https://github.com/user-attachments/assets/f13fe561-f4a7-423f-97ac-0e5ed51ad349)
+
+OR gate of drive strength 2 driving OA gate has more delay
+
+![WhatsApp Image 2024-10-03 at 16 26 59_32ab2d04](https://github.com/user-attachments/assets/c0d1acbb-5f9e-4ea3-b3d1-3dcbb5bda39a)
+Commands to perform analysis and optimize timing by replacing with OR gate of drive strength 4
+
+```tcl
+# Reports all the connections to a net
+report_net -connections _11668_
+
+# Replacing cell
+replace_cell _14506_ sky130_fd_sc_hd__or4_4
+
+# Generating custom timing report
+report_checks -fields {net cap slew input_pins} -digits 4
+```
+
+Result - slack reduced
+
+![WhatsApp Image 2024-10-03 at 16 26 59_34260d01](https://github.com/user-attachments/assets/6171a943-178a-4013-ad0e-295a2363ccaa)
+![WhatsApp Image 2024-10-03 at 16 26 59_694fecb0](https://github.com/user-attachments/assets/6861b520-c051-4229-aff1-e0a9f154bf48)
+
+Commands to verify instance `_14506_`  is replaced with `sky130_fd_sc_hd__or4_4`
+
+```tcl
+# Generating custom timing report
+report_checks -from _29043_ -to _30440_ -through _14506_
+```
+
+Screenshot of replaced instance
+
+![WhatsApp Image 2024-10-03 at 16 26 59_b253374a](https://github.com/user-attachments/assets/9417e560-e43b-40bd-98be-e528902d786f)
+
+*We started ECO fixes at wns -23.9000 and now we stand at wns -22.6173 we reduced around 1.2827 ns of violation*
+
+#### 11. Replace the old netlist with the new netlist generated after timing ECO fix and implement the floorplan, placement and cts.
+
+Now to insert this updated netlist to PnR flow and we can use `write_verilog` and overwrite the synthesis netlist but before that we are going to make a copy of the old old netlist
+
+Commands to make copy of netlist
+
+```bash
+# Change from home directory to synthesis results directory
+cd Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/03-10_10-30/results/synthesis/
+
+# List contents of the directory
+ls
+
+# Copy and rename the netlist
+cp picorv32a.synthesis.v picorv32a.synthesis_old.v
+
+# List contents of the directory
+ls
+```
+
+Screenshot of commands run
+
+![WhatsApp Image 2024-10-03 at 16 26 59_9c9f0ebc](https://github.com/user-attachments/assets/da1e3ae9-c726-425a-8012-13c1a4370b5c)
+
+Commands to write verilog
+
+```tcl
+# Check syntax
+help write_verilog
+
+# Overwriting current synthesis netlist
+write_verilog /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/03-10_10-30/results/synthesis/picorv32a.synthesis.v
+
+# Exit from OpenSTA since timing analysis is done
+exit
+```
+
+Screenshot of commands run
+
+![WhatsApp Image 2024-10-03 at 16 26 59_41155701](https://github.com/user-attachments/assets/8957a224-ae10-4e08-8c77-25ff0bab8373)
+
+Verified that the netlist is overwritten by checking that instance `_14506_`  is replaced with `sky130_fd_sc_hd__or4_4`
+
+![Screenshot from 2024-10-01 19-44-19](https://github.com/user-attachments/assets/c2fba02c-f481-4104-a8fb-f9b766e4e713)
+
+Since we confirmed that netlist is replaced and will be loaded in PnR but since we want to follow up on the earlier 0 violation design we are continuing with the clean design to further stages
+
+Commands load the design and run necessary stages
+
+```tcl
+# Now once again we have to prep design so as to update variables
+prep -design picorv32a -tag 24-03_10-03 -overwrite
+
+# Addiitional commands to include newly added lef to openlane flow merged.lef
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+# Command to set new value for SYNTH_STRATEGY
+set ::env(SYNTH_STRATEGY) "DELAY 3"
+
+# Command to set new value for SYNTH_SIZING
+set ::env(SYNTH_SIZING) 1
+
+# Now that the design is prepped and ready, we can run synthesis using following command
+run_synthesis
+
+# Follwing commands are alltogather sourced in "run_floorplan" command
+init_floorplan
+place_io
+tap_decap_or
+
+# Now we are ready to run placement
+run_placement
+
+# Incase getting error
+unset ::env(LIB_CTS)
+
+# With placement done we are now ready to run CTS
+run_cts
+```
+
+Screenshots of commands run
+
+![Screenshot from 2024-10-01 19-47-25](https://github.com/user-attachments/assets/77930291-f905-48f0-80fe-bec87c82a366)
+![Screenshot from 2024-10-01 19-48-24](https://github.com/user-attachments/assets/cc8d817d-1e43-482d-895f-8d6dcf2e2d9d)
+![Screenshot from 2024-10-01 19-49-22](https://github.com/user-attachments/assets/c6b56404-8b50-4235-887c-1020e8c72585)
+![Screenshot from 2024-10-01 19-49-58](https://github.com/user-attachments/assets/02a582c1-5467-454a-aaa0-f8d3cca13a40)
+![Screenshot from 2024-10-01 19-50-13](https://github.com/user-attachments/assets/9bc5b8b9-684e-4a3a-8294-089911e9a85e)
+![Screenshot from 2024-10-01 19-50-31](https://github.com/user-attachments/assets/40e98078-3e27-4db7-9d40-c63401bf3c73)
+![Screenshot from 2024-10-01 19-53-41 - 1](https://github.com/user-attachments/assets/4ae4ac9f-a66d-421e-95a6-57db49a919e4)
+
+#### 12. Post-CTS OpenROAD timing analysis.
+
+Commands to be run in OpenLANE flow to do OpenROAD timing analysis with integrated OpenSTA in OpenROAD
+
+```tcl
+# Command to run OpenROAD tool
+openroad
+
+# Reading lef file
+read_lef /openLANE_flow/designs/picorv32a/runs/24-03_10-03/tmp/merged.lef
+
+# Reading def file
+read_def /openLANE_flow/designs/picorv32a/runs/24-03_10-03/results/cts/picorv32a.cts.def
+
+# Creating an OpenROAD database to work with
+write_db pico_cts.db
+
+# Loading the created database in OpenROAD
+read_db pico_cts.db
+
+# Read netlist post CTS
+read_verilog /openLANE_flow/designs/picorv32a/runs/24-03_10-03/results/synthesis/picorv32a.synthesis_cts.v
+
+# Read library for design
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+
+# Link design and library
+link_design picorv32a
+
+# Read in the custom sdc we created
+read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc
+
+# Setting all cloks as propagated clocks
+set_propagated_clock [all_clocks]
+
+# Check syntax of 'report_checks' command
+help report_checks
+
+# Generating custom timing report
+report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4
+
+# Exit to OpenLANE flow
+exit
+```
+
+Screenshots of commands run and timing report generated
+
+![Screenshot from 2024-10-01 19-58-41](https://github.com/user-attachments/assets/5e130f2e-59a5-40ff-b51e-907819d9feff)
+![Screenshot from 2024-10-01 19-58-48](https://github.com/user-attachments/assets/605939c4-8cdf-4d75-8cab-61f2c296e245)
+![Screenshot from 2024-10-01 19-58-59](https://github.com/user-attachments/assets/14a5841a-f37e-4598-b55c-45ddaa72aad6)
+
+#### 13. Explore post-CTS OpenROAD timing analysis by removing 'sky130_fd_sc_hd__clkbuf_1' cell from clock buffer list variable 'CTS_CLK_BUFFER_LIST'.
+
+Commands to be run in OpenLANE flow to do OpenROAD timing analysis after changing `CTS_CLK_BUFFER_LIST`
+
+```tcl
+# Checking current value of 'CTS_CLK_BUFFER_LIST'
+echo $::env(CTS_CLK_BUFFER_LIST)
+
+# Removing 'sky130_fd_sc_hd__clkbuf_1' from the list
+set ::env(CTS_CLK_BUFFER_LIST) [lreplace $::env(CTS_CLK_BUFFER_LIST) 0 0]
+
+# Checking current value of 'CTS_CLK_BUFFER_LIST'
+echo $::env(CTS_CLK_BUFFER_LIST)
+
+# Checking current value of 'CURRENT_DEF'
+echo $::env(CURRENT_DEF)
+
+# Setting def as placement def
+set ::env(CURRENT_DEF) /openLANE_flow/designs/picorv32a/runs/24-03_10-03/results/placement/picorv32a.placement.def
+
+# Run CTS again
+run_cts
+
+# Checking current value of 'CTS_CLK_BUFFER_LIST'
+echo $::env(CTS_CLK_BUFFER_LIST)
+
+# Command to run OpenROAD tool
+openroad
+
+# Reading lef file
+read_lef /openLANE_flow/designs/picorv32a/runs/24-03_10-03/tmp/merged.lef
+
+# Reading def file
+read_def /openLANE_flow/designs/picorv32a/runs/24-03_10-03/results/cts/picorv32a.cts.def
+
+# Creating an OpenROAD database to work with
+write_db pico_cts1.db
+
+# Loading the created database in OpenROAD
+read_db pico_cts.db
+
+# Read netlist post CTS
+read_verilog /openLANE_flow/designs/picorv32a/runs/24-03_10-03/results/synthesis/picorv32a.synthesis_cts.v
+
+# Read library for design
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+
+# Link design and library
+link_design picorv32a
+
+# Read in the custom sdc we created
+read_sdc /openLANE_flow/designs/picorv32a/src/my_base.sdc
+
+# Setting all cloks as propagated clocks
+set_propagated_clock [all_clocks]
+
+# Generating custom timing report
+report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4
+
+# Report hold skew
+report_clock_skew -hold
+
+# Report setup skew
+report_clock_skew -setup
+
+# Exit to OpenLANE flow
+exit
+
+# Checking current value of 'CTS_CLK_BUFFER_LIST'
+echo $::env(CTS_CLK_BUFFER_LIST)
+
+# Inserting 'sky130_fd_sc_hd__clkbuf_1' to first index of list
+set ::env(CTS_CLK_BUFFER_LIST) [linsert $::env(CTS_CLK_BUFFER_LIST) 0 sky130_fd_sc_hd__clkbuf_1]
+
+# Checking current value of 'CTS_CLK_BUFFER_LIST'
+echo $::env(CTS_CLK_BUFFER_LIST)
+```
+
+Screenshots of commands run and timing report generated
+
+![Screenshot from 2024-10-01 20-03-17](https://github.com/user-attachments/assets/fc7a09b6-5dae-4a52-8683-a59a0b720985)
+
+![Screenshot from 2024-10-01 20-10-38](https://github.com/user-attachments/assets/074db746-939b-444f-8eb6-f8bdae92fe9f)
+
+![Screenshot from 2024-10-01 20-10-55](https://github.com/user-attachments/assets/a551d5b0-e3a4-4170-aff3-b77537e49df8)
+
+![Screenshot from 2024-10-01 20-10-55](https://github.com/user-attachments/assets/f30df6bc-9313-40cc-9660-694b5073595a)
+![Screenshot from 2024-10-01 20-10-59](https://github.com/user-attachments/assets/7c1442d8-116e-4a4c-adb9-7e6a8a5765ed)
 
 
    
