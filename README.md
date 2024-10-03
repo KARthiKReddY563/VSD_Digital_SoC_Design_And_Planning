@@ -385,19 +385,19 @@ Rise transition time = Time taken for o/p to rise to 80% - Time taken for o/p to
 
 ![Screenshot from 2024-09-29 23-43-49](https://github.com/user-attachments/assets/a5841cb8-1244-4805-9c9d-979dde29ee05)
 
-```math
-Rise transition time = 2.24638 - 2.18242 = 0.06396 ns = 63.96 ps
+```
+Rise transition time = 2.29505 - 2.19545 = 0.0996 ns = 99.6 ps
 ```
 
 Fall transition time calculation
 
-```math
+```
 Fall transition time = Time taken for output to fall to 20% - Time taken for output to fall to 80%
 ```
-```math
+```
 20% of output = 660 mV
 ```
-```math
+```
 80% of output = 2.64 V
 ```
 
@@ -413,16 +413,16 @@ Fall transition time = Time taken for output to fall to 20% - Time taken for out
 
 ![Screenshot from 2024-10-02 21-59-29 1](https://github.com/user-attachments/assets/8090ac3e-a0e7-4801-ab4b-2109a959d9fa)
 
-```math
-Fall transition time = 4.0955 - 4.0536 = 0.0419 ns = 41.9 ps
+```
+Fall transition time = 4.09559 - 4.0531 = 0.04249 ns = 42.49 ps
 ```
 
 Rise Cell Delay Calculation
 
-```math
+```
 Rise Cell Delay = Time taken for output to rise to 50% - Time taken for input to fall to 50%
 ```
-```math
+```
 50% of 3.3 V = 1.65 V
 ```
 
@@ -432,16 +432,16 @@ Rise Cell Delay = Time taken for output to rise to 50% - Time taken for input to
 
 ![WhatsApp Image 2024-10-02 at 22 13 49_7acceb53](https://github.com/user-attachments/assets/ea5c8c72-80fe-42ac-9833-69af1284119b)
 
-```math
-Rise Cell Delay = 2.21144 - 2.15008 = 0.06136 ns = 61.36 ps
+```
+Rise Cell Delay = 2.21174 - 2.15011 = 0.06163 ns = 61.63 ps
 ```
 
 Fall Cell Delay Calculation
 
-```math
+```
 Fall Cell Delay = Time taken for output to fall to 50% - Time taken for input to rise to 50%
 ```
-```math
+```
 50% of 3.3 V = 1.65 V
 ```
 
@@ -451,8 +451,8 @@ Fall Cell Delay = Time taken for output to fall to 50% - Time taken for input to
 
 ![WhatsApp Image 2024-10-02 at 22 13 49_7131e0b9](https://github.com/user-attachments/assets/cab04013-228a-4fb4-9f8f-b952c089fc67)
 
-```math
-Fall Cell Delay = 4.07 - 4.05 = 0.02 ns = 20 ps
+```
+Fall Cell Delay = 4.07821 - 4.05 = 0.02821 ns = 28.21 ps
 ```
 
 #### 6. Find problem in the DRC section of the old magic tech file for the skywater process and fix them.
@@ -992,7 +992,7 @@ Commands to include new lef and perform synthesis
 
 ```tcl
 # Now the OpenLANE flow is ready to run any design and initially we have to prep the design creating some necessary files and directories for running a specific design which in our case is 'picorv32a'
-prep -design picorv32a -tag 25-03_18-52 -overwrite
+prep -design picorv32a -tag 03-10_10-30 -overwrite
 
 # Adiitional commands to include newly added lef to openlane flow
 set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
@@ -1324,7 +1324,7 @@ write_db pico_cts1.db
 read_db pico_cts.db
 
 # Read netlist post CTS
-read_verilog /openLANE_flow/designs/picorv32a/runs/24-03_10-03/results/synthesis/picorv32a.synthesis_cts.v
+read_verilog /openLANE_flow/designs/picorv32a/runs/24-09_19-19/results/synthesis/picorv32a.synthesis_cts.v
 
 # Read library for design
 read_liberty $::env(LIB_SYNTH_COMPLETE)
