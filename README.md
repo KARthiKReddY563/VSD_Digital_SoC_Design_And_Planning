@@ -12,12 +12,12 @@ Task 1
   1. To run 'picorv32a' design synthesis using OpenLANE flow and generate necessary outputs.
   2. Calculate the Flop ratio.
        
-       
+```       
 Flop Ratio = Number of D Flip Flops / Total Number of Cells
-
-
+```
+```
 Percentage of DFF's = Flop Ratio * 100
-
+```
 #### Implementation 
 
 Commands to invoke the OpenLANE flow and perform synthesis
@@ -68,7 +68,7 @@ Screenshots of synthesis statistics report file with required values to calculat
 
 Calculation of Flop Ratio and DFF% from synthesis statistics report file
 
-```math
+```
 Flop Ratio = 1613/14876 = 0.108429685
 ```
 ```
@@ -134,21 +134,27 @@ According to floorplan def
 ```math
 1000 Unit Distance = 1 Micron
 ```
+
 ```math
 Die width in unit distance = 660685 - 0 = 660685
 ```
+
 ```math
 Die height in unit distance = 671405 - 0 = 671405
 ```
+
 ```math
 Distance in microns = Value in Unit Distance/1000
 ```
+
 ```math
 Die width in microns = 660685/1000 = 660.685 Microns
 ```
+
 ```math
 Die height in microns = 671405/1000 = 671.405 Microns
 ```
+
 ```math
 Area of die in microns = 660.685 * 671.405 = 443587.212425 Square Microns
 ```
@@ -849,6 +855,7 @@ Screenshots of commands run
 Comparing to previously noted run values area has increased and worst negative slack has become 0
 
 ![Screenshot from 2024-10-01 18-27-05](https://github.com/user-attachments/assets/0ff437e6-f7e9-4a9c-80dc-f9f3e089ee7f)
+
 ![Screenshot from 2024-10-01 18-26-59](https://github.com/user-attachments/assets/6c95c131-5969-47c2-94ca-1dbd6d8cd107)
 
 #### 8. Once synthesis has accepted our custom inverter we can now run floorplan and placement and verify the cell is accepted in PnR flow.
@@ -863,6 +870,7 @@ run_floorplan
 Screenshots of command run
 
 ![Screenshot from 2024-10-01 18-28-23](https://github.com/user-attachments/assets/f6fabcd0-03dc-4dff-b24a-e86ca2ac7acc)
+
 ![Screenshot from 2024-10-01 18-28-00](https://github.com/user-attachments/assets/62eb9b8c-7562-4889-88d1-0b43534f5bf4)
 
 Since we are facing unexpected un-explainable error while using `run_floorplan` command, we can instead use the following set of commands available based on information from `Desktop/work/tools/openlane_working_dir/openlane/scripts/tcl_commands/floorplan.tcl` and also based on `Floorplan Commands` section in `Desktop/work/tools/openlane_working_dir/openlane/docs/source/OpenLANE_commands.md`
@@ -877,7 +885,9 @@ tap_decap_or
 Screenshots of commands run
 
 ![Screenshot from 2024-10-01 18-29-49](https://github.com/user-attachments/assets/fd0b7e65-4686-4191-9faf-4836d0fd06b6)
+
 ![Screenshot from 2024-10-01 18-30-01](https://github.com/user-attachments/assets/3e5aba77-c592-4557-92dc-f0546bc33239)
+
 ![Screenshot from 2024-10-01 18-30-04](https://github.com/user-attachments/assets/14836a58-715d-429b-ad26-17a6a77accb0)
 
 Now that floorplan is done we can do placement using following command
@@ -890,6 +900,7 @@ run_placement
 Screenshots of command run
 
 ![Screenshot from 2024-10-01 18-31-18](https://github.com/user-attachments/assets/e623be3d-2b3c-4f1f-8d1f-1e6b069f6b26)
+
 ![Screenshot from 2024-10-01 18-31-27](https://github.com/user-attachments/assets/85d3b9a6-869c-47ac-a192-f2c75b3bcc51)
 
 Commands to load placement def in magic in another terminal
@@ -981,8 +992,11 @@ sta pre_sta.conf
 Screenshots of commands run
 
 ![WhatsApp Image 2024-10-03 at 16 11 30_887c6655](https://github.com/user-attachments/assets/239b8248-91ce-4043-9762-d75378fffea4)
+
 ![WhatsApp Image 2024-10-03 at 16 11 35_7f4ff229](https://github.com/user-attachments/assets/dbe7eadc-f960-45e1-b1e7-a14207ace847)
+
 ![WhatsApp Image 2024-10-03 at 16 11 35_e3c0b46e](https://github.com/user-attachments/assets/d6d64c97-5610-418f-8638-73609e3c20d3)
+
 ![WhatsApp Image 2024-10-03 at 16 11 35_c85c5457](https://github.com/user-attachments/assets/172d7066-854b-444e-a18b-8024858ee986)
 
 
@@ -1014,6 +1028,7 @@ run_synthesis
 Commands run final screenshot
 
 ![WhatsApp Image 2024-10-03 at 16 11 35_eeabbcbc](https://github.com/user-attachments/assets/57174759-afc6-4028-9ced-97214ea9787e)
+
 ![WhatsApp Image 2024-10-03 at 16 26 48_7a7edc27](https://github.com/user-attachments/assets/8d4e499a-f3a3-4580-a9a3-c6090e5061e8)
 
 Commands to run STA in another terminal
@@ -1029,8 +1044,11 @@ sta pre_sta.conf
 Screenshots of commands run
 
 ![WhatsApp Image 2024-10-03 at 16 26 48_bc213844](https://github.com/user-attachments/assets/473a06cd-4a90-4716-8572-a4e8a9b96ac1)
+
 ![WhatsApp Image 2024-10-03 at 16 26 48_9da211e6](https://github.com/user-attachments/assets/442dd400-18bd-4708-9a99-0a203a7fb057)
+
 ![WhatsApp Image 2024-10-03 at 16 26 48_981b622b](https://github.com/user-attachments/assets/eedfb28f-e17d-45d1-9a6f-65919d363656)
+
 ![WhatsApp Image 2024-10-03 at 16 26 48_6ebb809f](https://github.com/user-attachments/assets/ecd33bac-3f0b-4792-8318-519261f5abb6)
 
 #### 10. Make timing ECO fixes to remove all violations.
@@ -1058,8 +1076,11 @@ report_checks -fields {net cap slew input_pins} -digits 4
 Result - slack reduced
 
 ![WhatsApp Image 2024-10-03 at 16 26 48_aa40614d](https://github.com/user-attachments/assets/2e4ab95d-bab1-41ae-817c-b8f8349680e7)
+
 ![WhatsApp Image 2024-10-03 at 16 26 51_35f25ac7](https://github.com/user-attachments/assets/942a7a25-e8a8-41a7-a03c-e1646a15a7a6)
+
 ![WhatsApp Image 2024-10-03 at 16 26 51_b243c12d](https://github.com/user-attachments/assets/e801a249-f977-43eb-92c9-b87c9f239102)
+
 ![WhatsApp Image 2024-10-03 at 16 26 51_37ebd960](https://github.com/user-attachments/assets/98e57d7f-420b-408d-ae6d-9ffd764b33a1)
 
 OR gate of drive strength 2 is driving 4 fanouts
@@ -1082,6 +1103,7 @@ report_checks -fields {net cap slew input_pins} -digits 4
 Result - slack reduced
 
 ![WhatsApp Image 2024-10-03 at 16 26 57_7aae6f8d](https://github.com/user-attachments/assets/106fb7fd-43a1-4eab-b5f2-6a318802ab26)
+
 ![WhatsApp Image 2024-10-03 at 16 26 57_3a633e21](https://github.com/user-attachments/assets/ad3653a2-4480-4d5a-b31e-938cf37055f4)
 
 OR gate of drive strength 2 driving OA gate has more delay
@@ -1104,6 +1126,7 @@ report_checks -fields {net cap slew input_pins} -digits 4
 Result - slack reduced
 
 ![WhatsApp Image 2024-10-03 at 16 26 57_41f29edf](https://github.com/user-attachments/assets/c29a7cc3-9de2-4568-aaeb-ea32877d6169)
+
 ![WhatsApp Image 2024-10-03 at 16 26 57_16b62538](https://github.com/user-attachments/assets/f13fe561-f4a7-423f-97ac-0e5ed51ad349)
 
 OR gate of drive strength 2 driving OA gate has more delay
@@ -1125,6 +1148,7 @@ report_checks -fields {net cap slew input_pins} -digits 4
 Result - slack reduced
 
 ![WhatsApp Image 2024-10-03 at 16 26 59_34260d01](https://github.com/user-attachments/assets/6171a943-178a-4013-ad0e-295a2363ccaa)
+
 ![WhatsApp Image 2024-10-03 at 16 26 59_694fecb0](https://github.com/user-attachments/assets/6861b520-c051-4229-aff1-e0a9f154bf48)
 
 Commands to verify instance `_14506_`  is replaced with `sky130_fd_sc_hd__or4_4`
@@ -1224,11 +1248,17 @@ run_cts
 Screenshots of commands run
 
 ![Screenshot from 2024-10-01 19-47-25](https://github.com/user-attachments/assets/77930291-f905-48f0-80fe-bec87c82a366)
+
 ![Screenshot from 2024-10-01 19-48-24](https://github.com/user-attachments/assets/cc8d817d-1e43-482d-895f-8d6dcf2e2d9d)
+
 ![Screenshot from 2024-10-01 19-49-22](https://github.com/user-attachments/assets/c6b56404-8b50-4235-887c-1020e8c72585)
+
 ![Screenshot from 2024-10-01 19-49-58](https://github.com/user-attachments/assets/02a582c1-5467-454a-aaa0-f8d3cca13a40)
+
 ![Screenshot from 2024-10-01 19-50-13](https://github.com/user-attachments/assets/9bc5b8b9-684e-4a3a-8294-089911e9a85e)
+
 ![Screenshot from 2024-10-01 19-50-31](https://github.com/user-attachments/assets/40e98078-3e27-4db7-9d40-c63401bf3c73)
+
 ![Screenshot from 2024-10-01 19-53-41 - 1](https://github.com/user-attachments/assets/4ae4ac9f-a66d-421e-95a6-57db49a919e4)
 
 #### 12. Post-CTS OpenROAD timing analysis.
@@ -1279,7 +1309,9 @@ exit
 Screenshots of commands run and timing report generated
 
 ![Screenshot from 2024-10-01 19-58-41](https://github.com/user-attachments/assets/5e130f2e-59a5-40ff-b51e-907819d9feff)
+
 ![Screenshot from 2024-10-01 19-58-48](https://github.com/user-attachments/assets/605939c4-8cdf-4d75-8cab-61f2c296e245)
+
 ![Screenshot from 2024-10-01 19-58-59](https://github.com/user-attachments/assets/14a5841a-f37e-4598-b55c-45ddaa72aad6)
 
 #### 13. Explore post-CTS OpenROAD timing analysis by removing 'sky130_fd_sc_hd__clkbuf_1' cell from clock buffer list variable 'CTS_CLK_BUFFER_LIST'.
@@ -1369,6 +1401,7 @@ Screenshots of commands run and timing report generated
 ![Screenshot from 2024-10-01 20-10-55](https://github.com/user-attachments/assets/a551d5b0-e3a4-4170-aff3-b77537e49df8)
 
 ![Screenshot from 2024-10-01 20-10-55](https://github.com/user-attachments/assets/f30df6bc-9313-40cc-9660-694b5073595a)
+
 ![Screenshot from 2024-10-01 20-10-59](https://github.com/user-attachments/assets/7c1442d8-116e-4a4c-adb9-7e6a8a5765ed)
 
 ## Section 5 - Final steps for RTL2GDS using tritonRoute and openSTA (25/03/2024 - 26/03/2024)
@@ -1441,12 +1474,19 @@ gen_pdn
 Screenshots of power distribution network run
 
 ![WhatsApp Image 2024-10-03 at 17 22 38_b14b7a46](https://github.com/user-attachments/assets/28e855ad-5030-482a-bee6-8dcb216baf27)
+
 ![WhatsApp Image 2024-10-03 at 17 22 54_7deec917](https://github.com/user-attachments/assets/0c44b425-2801-4557-8285-03f4bf7644a3)
+
 ![WhatsApp Image 2024-10-03 at 17 22 55_3ebd028d](https://github.com/user-attachments/assets/18b61353-303c-415d-b589-a17af7bc7f22)
+
 ![WhatsApp Image 2024-10-03 at 17 22 57_36971d23](https://github.com/user-attachments/assets/0fe3a81f-8ceb-45fa-907c-1e4210f10773)
+
 ![WhatsApp Image 2024-10-03 at 17 23 04_19fdcd4a](https://github.com/user-attachments/assets/8df0645b-49c1-44e5-970b-284263580f9d)
+
 ![WhatsApp Image 2024-10-03 at 17 23 04_6e17a928](https://github.com/user-attachments/assets/7739360a-da83-4fd2-9c76-40d164be4d79)
+
 ![WhatsApp Image 2024-10-03 at 17 23 04_e632bd85](https://github.com/user-attachments/assets/fc64bf06-2f70-4aa6-9820-323af35462bd)
+
 ![WhatsApp Image 2024-10-03 at 17 23 07_ff46047f](https://github.com/user-attachments/assets/d3fd25c1-79d2-4cf4-bd90-37b09384a82d)
 
 Commands to load PDN def in magic in another terminal
@@ -1466,7 +1506,9 @@ Screenshot of commands ran
 Screenshots of PDN def
 
 ![WhatsApp Image 2024-10-03 at 17 23 14_0562f394](https://github.com/user-attachments/assets/7cee742f-ba32-44fc-8ca5-ee5769f03256)
+
 ![WhatsApp Image 2024-10-03 at 17 23 14_d0cd72a0](https://github.com/user-attachments/assets/15a2e506-2780-4c87-bd4b-3fe780a65cda)
+
 ![WhatsApp Image 2024-10-03 at 17 23 14_5b7a27f3](https://github.com/user-attachments/assets/7058a16b-3ae5-4c15-9734-906cb7a819da)
 
 #### 2. Perfrom detailed routing using TritonRoute and explore the routed layout.
@@ -1501,9 +1543,13 @@ magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs
 Screenshots of routed def
 
 ![WhatsApp Image 2024-10-03 at 18 06 13_06c24d3e](https://github.com/user-attachments/assets/b5b6423d-750b-49f9-adeb-0a73ddc739e8)
+
 ![WhatsApp Image 2024-10-03 at 18 06 13_0b0d6888](https://github.com/user-attachments/assets/e0e11a83-bd82-46d9-94da-eda4ed719771)
+
 ![WhatsApp Image 2024-10-03 at 18 06 15_10c78fa7](https://github.com/user-attachments/assets/3cc6d07c-5faa-4730-8b51-8d159f695215)
+
 ![WhatsApp Image 2024-10-03 at 18 06 18_fef149c7](https://github.com/user-attachments/assets/a5b6880a-b17f-4105-82e4-488ffcdfb694)
+
 ![WhatsApp Image 2024-10-03 at 18 06 18_780bcad5](https://github.com/user-attachments/assets/1e2fe344-79e9-4508-bff4-ca064b58a9f5)
 
 
