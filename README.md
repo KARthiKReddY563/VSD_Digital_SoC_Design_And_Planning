@@ -70,7 +70,8 @@ Calculation of Flop Ratio and DFF% from synthesis statistics report file
 
 ```math
 Flop Ratio = 1613/14876 = 0.108429685
-
+```
+```
 Percentage of DFF's = 0.108429685 * 100 = 10.84296854%
 
 ```
@@ -132,17 +133,23 @@ According to floorplan def
 
 ```math
 1000 Unit Distance = 1 Micron
-
+```
+```math
 Die width in unit distance = 660685 - 0 = 660685
-
+```
+```math
 Die height in unit distance = 671405 - 0 = 671405
-
+```
+```math
 Distance in microns = Value in Unit Distance/1000
-
+```
+```math
 Die width in microns = 660685/1000 = 660.685 Microns
-
+```
+```math
 Die height in microns = 671405/1000 = 671.405 Microns
-
+```
+```math
 Area of die in microns = 660.685 * 671.405 = 443587.212425 Square Microns
 ```
 
@@ -201,7 +208,7 @@ Commands to load placement def in magic in another terminal
 
 ```bash
 # Change directory to path containing generated placement def
-cd Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/17-03_12-06/results/placement/
+cd Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/23-09_12-27/results/placement/
 
 # Command to load the placement def in magic tool
 magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def &
@@ -359,10 +366,10 @@ Rise transition time calculation
 Rise transition time = Time taken for output to rise to 80% - Time taken for output to rise to 20%
 ```
 ```math
-20% of output = 660 mV
+20 % of output = 660 mV
 ```
 ```math
-80% of output = 2.64 V
+80 % of output = 2.64 V
 ```
 
 20% Screenshots
