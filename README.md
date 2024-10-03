@@ -18,7 +18,7 @@ Flop Ratio = Number of D Flip Flops / Total Number of Cells
 
 Percentage of DFF's = Flop Ratio * 100
 
-Implementation 
+#### Implementation 
 
 Commands to invoke the OpenLANE flow and perform synthesis
  
